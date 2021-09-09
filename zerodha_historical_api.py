@@ -33,11 +33,12 @@ if __name__ == "__main__":
     # date format %Y-%m-%d
     frm = datetime.strptime( "2015-03-01", "%Y-%m-%d" )
     to = datetime.strptime( "2015-03-01", "%Y-%m-%d" )
+    today = datetime.tody()
     url = "https://kite.zerodha.com/oms/instruments/historical/{stock_id}/minute?user_id=GH1868&oi=1&from={from_}&to={to_}"
     headers = {
         "accept": "*/*",
         "accept-language": "en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,hi;q=0.6",
-        "authorization": "enctoken D4W/EFjpcppWaOC+4pVaS0sejTesfgX6jgUpY54p843O6Qywi/XKT5NMC0TZYGXOndmfpFMPCEWomXfQz9lq1kABBYroCM7ZnveQc9cQ7gWogulKgC3LkQ==",
+        "authorization": "enctoken UpyNg+0QwdYUT/CVom42kKqBTp7Jp4XzJcblM2Z1koY336UL5IaVHlrdfNSMG8W9DnzxtdjK0DRX713UI9OgNMKz4dhdVzPuHXJgynnLrh61jUERfwVYuA==",
         "sec-ch-ua": "\"Chromium\";v=\"92\", \" Not A;Brand\";v=\"99\", \"Google Chrome\";v=\"92\"",
         "sec-ch-ua-mobile": "?0",
         "sec-fetch-dest": "empty",
@@ -54,6 +55,8 @@ if __name__ == "__main__":
         # print( frm, to, to-frm )
         frm = to + timedelta( days=1 )
         to = frm + timedelta( days=30 )
+        if frm > today:
+            break
         tmp_url = url.format( stock_id=RELIANCE_ID, from_=frm.strftime( "%Y-%m-%d" ), to_=to.strftime( "%Y-%m-%d" ) )
         candles.extend( get_candles( tmp_url ) )
         sleep(1)

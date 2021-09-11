@@ -55,17 +55,6 @@ class NeuralNetwork:
     for l in range(1, len(self.layer_nodes)):
       self.params['W' + str(l)] = np.random.uniform(-1, 1, size=(self.layer_nodes[l], self.layer_nodes[l-1]))
       self.params['b' + str(l)] = np.random.uniform(-1, 1, size=(self.layer_nodes[l], 1))
-    # ### START CODE HERE ### (≈ 4 lines of code)
-    # # W1 = np.random.randn(n_h, n_x)
-    # # For Tanh only
-    # W1 = np.random.normal(-1, 1, size=(n_h, n_x))
-    # # b1 = np.zeros(shape=(n_h, 1))
-    # b1 = np.random.normal(-1, 1, size=(n_h, 1))
-    # # W2 = np.random.randn(n_y, n_h)
-    # W2 = np.random.normal(-1, 1, size=(n_y, n_h))
-    # # b2 = np.zeros(shape=(n_y, 1))
-    # b2 = np.random.normal(-1, 1, size=(n_y, 1))
-    # ### END CODE HERE ###
 
 def layer_sizes(X, Y):
     """

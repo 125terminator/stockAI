@@ -1,7 +1,7 @@
 
 GEN_NUM = 0
 
-def main(neuralNetwork):
+def main(buy_ann, sell_ann):
     ##########
     global GEN_NUM
     robos = {}
@@ -11,22 +11,10 @@ def main(neuralNetwork):
 
     ge = {}
     nets = {}
-    robo_id = 0
-    for net in neuralNetwork:
+    for robo_id in range(0, len(sell_ann)):
         nets[robo_id] = net
-        robos[robo_id] = Robo()
-        ge[robo_id] = 0
-        robo_id += 1
-    ##########
-    QUIT = False
-    while QUIT == False:
-        rem_robos = set()
-        for robo_id, robo in robos.items():
-            brainInput = robo.getInputs()
-            brainInput = brainInput.reshape(brainInput.shape[0], 1)
-            brainOutput = nets[robo_id].forward_propagation(brainInput)
-            performance, isIn = robo.move(brainOutput)
-            ge[robo_id] += performance
+        robos[robo_id] = Robo(sell_ann[robo_id], sell_ann[robo_id])
+        ge[robo_id] = robos[robo_id].fitness()
     # fp_fitness.write('{}\n'.format(best_fitness))
     # fp_food.write('{}\n'.format(best_robo.num_food))
     # if GEN_NUM%10 == 0:

@@ -41,7 +41,7 @@ class Robo:
             elif ind == 2:
                 pass
 
-        return self.money - self.init_money
+        return self.money
 
     def prepare_inputs(self):
         self.get_moving_averages()

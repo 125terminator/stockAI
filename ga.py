@@ -85,7 +85,7 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
       print("Generation : {}\t Fitness: {}".format(str(i+1), str(fitness)))
 
       population = next_generation(eliteSize, mutationRate)
-      if (i+1)%1==0:
+      if (i+1)%10==0:
         with open('weights.pickle', 'wb') as handle:
           pickle.dump(best_pop, handle, protocol=pickle.HIGHEST_PROTOCOL)
           # savetxt('{}.csv'.format(name), , delimiter=',')

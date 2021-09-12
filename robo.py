@@ -1,4 +1,5 @@
 from scipy.stats import zscore
+from broker_calc import broker_calc
 
 
 class Robo:
@@ -17,20 +18,24 @@ class Robo:
         # 0 -> buy if money
         # 1 -> sell if has stocks
         # 2 -> hold
-        for i in range(60, a.shape[1]):
-            ind = a[:, i].argmax()
+        for i in range(60, output.shape[1]):
+            ind = output[:, i].argmax()
 
             if ind == 0:
                 bought_price = df.Close[i]
                 if self.money >= bought_price:
-                    stock_nos = self.money // bought_price
-                    self.bought = [True, stock_nos, bought_price]
-                    self.money = self.money - stock_nos * bought_price
+                    stock_qty = self.money // bought_price
+                    self.bought = [True, stock_qty, bought_price]
+                    self.money = self.money - stock_qty * bought_price
 
             elif ind == 1:
                 if self.bought[0] == True:
                     sell_price = df.Close[i]
-                    holdings = self.bought[1]*sell_price
+                    buy_price = self.bought[2]
+                    stock_qty = self.bought[1]
+
+                    holdings = stock_qty*sell_price
+                    holdings -= broker_calc(buy_price, sell_price, stock_qty)
                     self.money += holdings
                     self.bought = [False, 0, 0]
 

@@ -5,9 +5,6 @@ def main(ann):
     ##########
     global GEN_NUM
     robos = {}
-    
-    best_fitness = -1e6
-    best_robo = Robo
 
     ge = {}
     nets = {}

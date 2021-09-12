@@ -25,8 +25,8 @@ def main(ann):
     return ge 
 
 # np.random.seed(1999)
-x = np.random.rand(34, 1)
-y = np.random.rand(9, 1)
+x = np.random.rand(13, 1)
+y = np.random.rand(3, 1)
 bestPop = GA(x, y, n_h=[20, 12], generations=10000, popSize=100, eliteSize=10, main=main, mutationRate=0.5)
 # with open('weights/weights0.pickle', 'rb') as f:
 #     x = pickle.load(f)

@@ -34,7 +34,7 @@ class Robo:
                     buy_price = self.bought[2]
                     stock_qty = self.bought[1]
 
-                    holdings = get_net_profit(buy_price, sell_price, stock_qty)
+                    holdings = buy_price*stock_qty + get_net_profit(buy_price, sell_price, stock_qty)
                     self.money += holdings
                     self.bought = [False, 0, 0]
 

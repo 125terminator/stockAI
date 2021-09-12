@@ -35,7 +35,7 @@ def broker_calc(buy_price, sell_price, qty):
         breakeven = to_fixed(total_tax / qty, 2)
 
     # print('Profit if no charges = {}'.format())
-    print(' Turnover = {}\n Brokerage = {}\n STT total = {}\n Exc txn = {}\n GST = {}\n Sebi chg = {}\n Stamp duty = {}\n Total tax = {}'.format(turnover, brokerage, stt_total, exc_trans_charge, stax, sebi_charges, stamp_charges, total_tax))
+    # print(' Turnover = {}\n Brokerage = {}\n STT total = {}\n Exc txn = {}\n GST = {}\n Sebi chg = {}\n Stamp duty = {}\n Total tax = {}'.format(turnover, brokerage, stt_total, exc_trans_charge, stax, sebi_charges, stamp_charges, total_tax))
 
     net_profit = to_fixed(((sell_price - buy_price) * qty) - total_tax, 2)
 

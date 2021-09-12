@@ -10,7 +10,7 @@ def main(ann):
     nets = {}
     for robo_id in range(0, len(ann)):
         nets[robo_id] = net
-        robos[robo_id] = Robo(ann[robo_id])
+        robos[robo_id] = Robo(ann[robo_id], 100000)
         ge[robo_id] = robos[robo_id].fitness()
     # fp_fitness.write('{}\n'.format(best_fitness))
     # fp_food.write('{}\n'.format(best_robo.num_food))

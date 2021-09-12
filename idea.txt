@@ -4,3 +4,4 @@
     sherpe ratio, V2 ratio, ...
 3) for prediction use multiple ANN like multiple knowledgeable person
     the person can be trained with different stocks data so that they have wide view over stock trading.
+4)  using two ann like sell ann buy ann for diff purpose

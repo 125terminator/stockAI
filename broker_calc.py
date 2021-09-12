@@ -10,7 +10,7 @@ def jsround(value):
 def to_fixed(a, fix):
     return round(a, fix)
 
-def broker_calc(buy_price, sell_price, qty):
+def get_net_profit(buy_price, sell_price, qty):
     brokerage_buy = to_fixed(min((buy_price * qty * 0.0003), 20), 2)
     brokerage_sell = to_fixed(min((sell_price * qty * 0.0003), 20), 2)
     brokerage = to_fixed(brokerage_buy + brokerage_sell, 2)

@@ -1,5 +1,5 @@
 from scipy.stats import zscore
-from broker_calc import broker_calc
+from broker_calc import get_net_profit
 
 
 class Robo:
@@ -34,8 +34,7 @@ class Robo:
                     buy_price = self.bought[2]
                     stock_qty = self.bought[1]
 
-                    holdings = stock_qty*sell_price
-                    holdings -= broker_calc(buy_price, sell_price, stock_qty)
+                    holdings = get_net_profit(buy_price, sell_price, stock_qty)
                     self.money += holdings
                     self.bought = [False, 0, 0]
 

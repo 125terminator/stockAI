@@ -22,7 +22,7 @@ class Robo:
             ind = output[:, i].argmax()
 
             if ind == 0:
-                bought_price = df.Close[i]
+                bought_price = self.df.Close[i]
                 if self.money >= bought_price:
                     stock_qty = self.money // bought_price
                     self.bought = [True, stock_qty, bought_price]
@@ -30,7 +30,7 @@ class Robo:
 
             elif ind == 1:
                 if self.bought[0] == True:
-                    sell_price = df.Close[i]
+                    sell_price = self.df.Close[i]
                     buy_price = self.bought[2]
                     stock_qty = self.bought[1]
 

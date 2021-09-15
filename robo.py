@@ -24,8 +24,8 @@ class Robo:
         # 0 -> buy if money
         # 1 -> sell if has stocks
         # 2 -> hold
-        start_date_index = 60
-        while df.Date[start_date_index][12] != '9' or df.Date[start_date_index][14:16]!='15':
+        start_date_index = 128
+        while df.Date[start_date_index] != 1:
             start_date_index += 1
 
         for i in range(start_date_index, output.shape[1]):
@@ -49,7 +49,7 @@ class Robo:
                     self.bought = [False, 0, 0]
 
             
-            if df.Date[i][11:13]=='15' and df.Date[i][14:16]=='29':
+            if df.Date[i]==375:
                 self.bought = [False, 0, 0]
 
         return self.money
@@ -61,12 +61,7 @@ class Robo:
     
     def get_time_as_absindex(self):
         # return 09:15 as 1, 09:16 as 2, so on
-        init_time = parse('2015-03-02T09:14:00+0530')
-        time = []
-        for i in range(len(df)):
-            ind = parse(df.Date[i]) - init_time
-            time.append(ind.seconds // 60)
-        self.time_ind = zscore(time)
+        self.time_ind = zscore(df.Date)
         self.time_ind = np.reshape(self.time_ind, (1, self.time_ind.shape[0]))
 
     def get_moving_averages(self):

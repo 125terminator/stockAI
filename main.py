@@ -7,6 +7,7 @@ from ga import *
 
 df = pd.read_csv('data/reliance.csv')
 df = df[:10000]
+df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
 def main(ann):
     robos = {}

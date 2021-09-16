@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
 
-from neural_network import *
-from robo import *
-from ga import *
+from neural_network import NeuralNetwork
+from robo import Robo
+from ga import GA
 
 df = pd.read_csv('data/reliance.csv')
-df = df[:10000]
+df = df[:10100]
+df["Time"] = df.Date
 df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
 def main(ann):

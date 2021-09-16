@@ -10,14 +10,20 @@ def jsround(value):
 def to_fixed(a, fix):
     return round(a, fix)
 
-def get_net_profit(buy_price, sell_price, qty):
+def get_net_profit(buy_price, sell_price, qty, delivery=False):
     brokerage_buy = to_fixed(min((buy_price * qty * 0.0003), 20), 2)
     brokerage_sell = to_fixed(min((sell_price * qty * 0.0003), 20), 2)
     brokerage = to_fixed(brokerage_buy + brokerage_sell, 2)
 
     turnover = to_fixed((buy_price+sell_price)*qty, 2)
 
-    stt_total = jsround(to_fixed((sell_price * qty) * 0.00025, 2))
+    if delivery:
+        stt_total = jsround(to_fixed(turnover * 0.001, 2))
+        brokerage = 0
+        stamp_charges = to_fixed(buy_price*qty*0.00015, 2)
+    else:
+        stt_total = jsround(to_fixed((sell_price * qty) * 0.00025, 2))
+        stamp_charges = to_fixed((buy_price*qty)*0.00003, 2)
 
     exc_trans_charge = to_fixed(0.0000345*turnover, 2)
     cc = 0
@@ -25,8 +31,6 @@ def get_net_profit(buy_price, sell_price, qty):
     stax = to_fixed(0.18 * (brokerage + exc_trans_charge), 2)
 
     sebi_charges = to_fixed(turnover*0.000001, 2)
-
-    stamp_charges = to_fixed((buy_price*qty)*0.00003, 2)
 
     total_tax = to_fixed(brokerage + stt_total + exc_trans_charge + cc + stax + sebi_charges + stamp_charges, 2)
 

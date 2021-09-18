@@ -27,11 +27,3 @@ def main(ann):
 x = np.random.rand(14, 1)
 y = np.random.rand(3, 1)
 bestPop = GA(x, y, n_h=[20, 12], generations=10000, popSize=100, eliteSize=10, main=main, mutationRate=0.5)
-# with open('weights/weights0.pickle', 'rb') as f:
-#     x = pickle.load(f)
-#     tmp = []
-#     tmp.append(x)
-#     print(main(tmp))
-# with open('save.json', 'w') as fp:
-#     json.dump(save.generationBest, fp)
-# print(len(save.generationBest))

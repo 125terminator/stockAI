@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from neural_network import *
+from neural_network import NeuralNetwork
 import time, datetime
 from numpy import loadtxt
 import operator
@@ -88,9 +88,5 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
       if (i+1)%10==0:
         with open('weights.pickle', 'wb') as handle:
           pickle.dump(best_pop, handle, protocol=pickle.HIGHEST_PROTOCOL)
-          # savetxt('{}.csv'.format(name), , delimiter=',')
-        # savetxt('antW2.csv', best_pop.ant.brain.W2, delimiter=',')
-        # savetxt('antb1.csv', best_pop.ant.brain.b1, delimiter=',')
-        # savetxt('antb2.csv', best_pop.ant.brain.b2, delimiter=',')
     return best_pop
   return genetic_algorithm(popSize, eliteSize, mutationRate, generations)

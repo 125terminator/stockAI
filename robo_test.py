@@ -8,7 +8,7 @@ import numpy as np
 from broker_calc import get_net_profit
 
 
-class Robo:
+class Robo_Test:
     def __init__(self, ann, df, money):
         self.ann = ann
         self.df = df
@@ -39,6 +39,7 @@ class Robo:
             holdings = buy_price*stock_qty + net_profit
             self.money += holdings
             self.bought = [False, 0, 0]
+            print("Sold at = %f\t Profit = %f" %(holdings, net_profit), buy_price, sell_price, stock_qty)
 
     def fitness(self):
         self.prepare_inputs()
@@ -69,6 +70,7 @@ class Robo:
                         stock_qty = self.money // bought_price
                         self.bought = [True, stock_qty, bought_price]
                         self.money = self.money - stock_qty * bought_price
+                        print(df.Time[i], "Bought at = %f" %(stock_qty*bought_price), end = '\t')
 
                 elif ind == 1:
                     self.sell_stocks(i)

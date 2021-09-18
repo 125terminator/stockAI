@@ -28,18 +28,18 @@ class Robo_Test:
             stock_qty = self.bought[1]
 
             net_profit = get_net_profit(buy_price, sell_price, stock_qty)
+            print(self.df.Time[i], "Sold at = %.2f\t Profit = %.2f %.2f %.2f %.2f %.2f" %(buy_price*stock_qty + net_profit, net_profit, self.profit + net_profit, buy_price, sell_price, stock_qty))
 
             # if we are getting profit after selling stocks then
             # the amount is not credited imediately to our margin
             # profit is credited after one day
             # if loss then our margin is decreased
+            self.profit += net_profit
             if net_profit > 0:
-                self.profit += net_profit
-                net_profit
+                net_profit = 0
             holdings = buy_price*stock_qty + net_profit
             self.money += holdings
             self.bought = [False, 0, 0]
-            print("Sold at = %f\t Profit = %f" %(holdings, net_profit), buy_price, sell_price, stock_qty)
 
     def fitness(self):
         self.prepare_inputs()
@@ -70,7 +70,7 @@ class Robo_Test:
                         stock_qty = self.money // bought_price
                         self.bought = [True, stock_qty, bought_price]
                         self.money = self.money - stock_qty * bought_price
-                        print(df.Time[i], "Bought at = %f" %(stock_qty*bought_price), end = '\t')
+                        print(self.df.Time[i], "Bought at = %.2f" %(stock_qty*bought_price), end = '\t')
 
                 elif ind == 1:
                     self.sell_stocks(i)

@@ -33,9 +33,9 @@ class Robo:
             # the amount is not credited imediately to our margin
             # profit is credited after one day
             # if loss then our margin is decreased
+            self.profit += net_profit
             if net_profit > 0:
-                self.profit += net_profit
-                net_profit
+                net_profit = 0
             holdings = buy_price*stock_qty + net_profit
             self.money += holdings
             self.bought = [False, 0, 0]

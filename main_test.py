@@ -17,9 +17,7 @@ def main_test(ann):
     robos = {}
 
     ge = {}
-    nets = {}
     for robo_id in range(0, len(ann)):
-        nets[robo_id] = net
         robos[robo_id] = Robo_Test(ann=ann[robo_id], df=df, money=100000)
         ge[robo_id] = robos[robo_id].fitness()
     return ge 
@@ -29,4 +27,4 @@ with open('weights.pickle', 'rb') as f:
     x = pickle.load(f)
     tmp = []
     tmp.append(x)
-    print(main(tmp))
+    print(main_test(tmp))

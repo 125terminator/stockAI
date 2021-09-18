@@ -16,9 +16,7 @@ def main(ann):
     robos = {}
 
     ge = {}
-    nets = {}
     for robo_id in range(0, len(ann)):
-        nets[robo_id] = net
         robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000)
         ge[robo_id] = robos[robo_id].fitness()
     return ge 

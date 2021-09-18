@@ -21,7 +21,7 @@ def main(ann):
 
     ge = {}
     for robo_id in range(0, len(ann)):
-        robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs)
+        robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs)
         ge[robo_id] = robos[robo_id].fitness()
     return ge 
 

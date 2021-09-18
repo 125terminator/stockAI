@@ -2,7 +2,6 @@ from datetime import datetime
 from dateutil.parser import parse
 from random import randrange
 
-from scipy.stats import zscore
 import numpy as np
 
 from broker_calc import get_net_profit
@@ -77,8 +76,4 @@ class Robo:
                     self.sell_stocks(i)
                     
 
-        return self.money + self.profit + 5*self.loss
-
-    
-
-    
+        return self.money + self.profit + 5*self.loss 

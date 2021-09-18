@@ -1,3 +1,5 @@
+from scipy.stats import zscore
+
 class Inputs:
     def __init__(self, df):
         self.df = df

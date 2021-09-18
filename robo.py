@@ -20,6 +20,7 @@ class Robo:
         self.time_ind = []
         self.inputs = []
         self.profit = 0
+        self.loss = 0
 
     def sell_stocks(self, i):
         if self.bought[0] == True:
@@ -33,9 +34,11 @@ class Robo:
             # the amount is not credited imediately to our margin
             # profit is credited after one day
             # if loss then our margin is decreased
-            self.profit += net_profit
             if net_profit > 0:
+                self.profit += net_profit
                 net_profit = 0
+            else:
+                self.loss += net_profit
             holdings = buy_price*stock_qty + net_profit
             self.money += holdings
             self.bought = [False, 0, 0]
@@ -74,7 +77,7 @@ class Robo:
                     self.sell_stocks(i)
                     
 
-        return self.money + self.profit
+        return self.money + self.profit + 5*self.loss
 
     def prepare_inputs(self):
         self.get_moving_averages()

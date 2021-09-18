@@ -7,7 +7,6 @@ import numpy as np
 
 from broker_calc import get_net_profit
 
-
 class Robo_Test:
     def __init__(self, ann, df, money):
         self.ann = ann
@@ -20,6 +19,7 @@ class Robo_Test:
         self.time_ind = []
         self.inputs = []
         self.profit = 0
+        self.loss = 0
 
     def sell_stocks(self, i):
         if self.bought[0] == True:
@@ -30,13 +30,16 @@ class Robo_Test:
             net_profit = get_net_profit(buy_price, sell_price, stock_qty)
             print(self.df.Time[i], "Sold at = %.2f\t Profit = %.2f %.2f %.2f %.2f %.2f" %(buy_price*stock_qty + net_profit, net_profit, self.profit + net_profit, buy_price, sell_price, stock_qty))
 
+
             # if we are getting profit after selling stocks then
             # the amount is not credited imediately to our margin
             # profit is credited after one day
             # if loss then our margin is decreased
-            self.profit += net_profit
             if net_profit > 0:
+                self.profit += net_profit
                 net_profit = 0
+            else:
+                self.loss += net_profit
             holdings = buy_price*stock_qty + net_profit
             self.money += holdings
             self.bought = [False, 0, 0]
@@ -72,11 +75,12 @@ class Robo_Test:
                         self.money = self.money - stock_qty * bought_price
                         print(self.df.Time[i], "Bought at = %.2f" %(stock_qty*bought_price), end = '\t')
 
+
                 elif ind == 1:
                     self.sell_stocks(i)
                     
 
-        return self.money + self.profit
+        return self.money + self.profit + self.loss
 
     def prepare_inputs(self):
         self.get_moving_averages()

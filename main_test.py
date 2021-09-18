@@ -6,8 +6,7 @@ from robo import Robo_Test
 from ga import GA
 
 df = pd.read_csv('data/reliance.csv')
-# 375 ind is start of 9:15 and 10088 time is 15:29
-df = df[375:10088]
+df = df[10088:10088+375*30]
 df.index = np.arange(0, df.shape[0])
 df["Time"] = df.Date
 df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)

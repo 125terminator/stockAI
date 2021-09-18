@@ -21,7 +21,7 @@ class Robo:
         self.inputs = []
         self.profit = 0
 
-    def sell_stocks(self):
+    def sell_stocks(self, i):
         if self.bought[0] == True:
             sell_price = self.df.Close[i]
             buy_price = self.bought[2]
@@ -55,11 +55,11 @@ class Robo:
             # only sell the stock
             if self.df.Date[i] > 356:
                 if ind == 1:
-                    self.sell_stocks()
+                    self.sell_stocks(i)
                 
                 # sell harshly and immediately at 15:18
                 if self.df.Date[i] >= 364:
-                    self.sell_stocks()
+                    self.sell_stocks(i)
 
             else:
 
@@ -71,13 +71,14 @@ class Robo:
                         self.money = self.money - stock_qty * bought_price
 
                 elif ind == 1:
-                    self.sell_stocks()
+                    self.sell_stocks(i)
                     
 
         return self.money + self.profit
 
     def prepare_inputs(self):
         self.get_moving_averages()
+        self.inputs = self.moving_averages
 
     def get_moving_averages(self):
         periods = [1, 3, 5, 7, 11, 15, 19, 23, 27, 35, 41, 50, 61, 128]

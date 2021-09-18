@@ -19,52 +19,62 @@ class Robo:
         self.moving_averages = []
         self.time_ind = []
         self.inputs = []
-    
+        self.profit = 0
+
+    def sell_stocks(self):
+        if self.bought[0] == True:
+            sell_price = self.df.Close[i]
+            buy_price = self.bought[2]
+            stock_qty = self.bought[1]
+
+            net_profit = get_net_profit(buy_price, sell_price, stock_qty)
+
+            # if we are getting profit after selling stocks then
+            # the amount is not credited imediately to our margin
+            # profit is credited after one day
+            # if loss then our margin is decreased
+            if net_profit > 0:
+                self.profit += net_profit
+                net_profit
+            holdings = buy_price*stock_qty + net_profit
+            self.money += holdings
+            self.bought = [False, 0, 0]
+
     def fitness(self):
         self.prepare_inputs()
         output = self.ann.forward_propagation(self.inputs)
+        # output index meaning
         # 0 -> buy if money
         # 1 -> sell if has stocks
         # 2 -> hold
-        start_date_index = 128
-        end_index = 10000
-        while self.df.Date[start_date_index] != 1:
-            start_date_index += 1
 
-        delivery_trade = False
-
-        for i in range(start_date_index, output.shape[1]):
+        for i in range(output.shape[1]):
             ind = output[:, i].argmax()
 
-            if self.df.Date[i]==1 and self.bought[0]:
-                delivery_trade = True
-            if i >= end_index and self.bought[0]==False:
-                break
+            # Do not buy stocks after 15:10
+            # only sell the stock
+            if self.df.Date[i] > 356:
+                if ind == 1:
+                    self.sell_stocks()
+                
+                # sell harshly and immediately at 15:18
+                if self.df.Date[i] >= 364:
+                    self.sell_stocks()
 
-            if ind == 0:
-                bought_price = self.df.Close[i]
-                if self.bought[0] == False and self.money >= bought_price:
-                    stock_qty = self.money // bought_price
-                    self.bought = [True, stock_qty, bought_price]
-                    self.money = self.money - stock_qty * bought_price
+            else:
 
-            elif ind == 1:
-                if self.bought[0] == True:
-                    sell_price = self.df.Close[i]
-                    buy_price = self.bought[2]
-                    stock_qty = self.bought[1]
+                if ind == 0:
+                    bought_price = self.df.Close[i]
+                    if self.bought[0] == False and self.money >= bought_price:
+                        stock_qty = self.money // bought_price
+                        self.bought = [True, stock_qty, bought_price]
+                        self.money = self.money - stock_qty * bought_price
+
+                elif ind == 1:
+                    self.sell_stocks()
                     
-                    if delivery_trade:
-                        net_profit = get_net_profit(buy_price, sell_price, stock_qty, True)
-                        delivery_trade = False
-                    else:
-                        net_profit = get_net_profit(buy_price, sell_price, stock_qty)
 
-                    holdings = buy_price*stock_qty + net_profit
-                    self.money += holdings
-                    self.bought = [False, 0, 0]
-
-        return self.money
+        return self.money + self.profit
 
     def prepare_inputs(self):
         self.get_moving_averages()

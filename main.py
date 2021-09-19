@@ -1,4 +1,3 @@
-from util import ANN_Inputs
 import numpy as np
 import pandas as pd
 
@@ -14,18 +13,21 @@ df.index = np.arange(0, df.shape[0])
 df["Time"] = df.Date
 df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
-ann_inputs = Inputs(df)
 
 def main(ann):
     robos = {}
 
     ge = {}
     for robo_id in range(0, len(ann)):
-        robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs)
+        robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
         ge[robo_id] = robos[robo_id].fitness()
     return ge 
 
-# np.random.seed(1999)
+logger = open('debug.log', 'w')
+ann_inputs = Inputs(df)
+
 x = np.random.rand(14, 1)
 y = np.random.rand(3, 1)
-bestPop = GA(x, y, n_h=[20, 12], generations=10000, popSize=100, eliteSize=10, main=main, mutationRate=0.5)
+bestPop = GA(x, y, n_h=[20, 12], generations=100000, popSize=100, eliteSize=10, main=main, mutationRate=0.5)
+
+logger.close()

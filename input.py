@@ -1,4 +1,5 @@
 import numpy as np
+
 class Inputs:
     def __init__(self, df):
         self.df = df
@@ -33,6 +34,7 @@ class Inputs:
             self.rsi_list.append(m)
         
         self.rsi_list = np.array(self.rsi_list)
+        self.rsi_list /= 100
     
     def compute_moving_averages(self):
         periods = [1, 3, 5, 7, 11, 15, 19, 23, 27, 35, 41, 50, 61, 128, 375]

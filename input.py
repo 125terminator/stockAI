@@ -44,7 +44,7 @@ class Inputs:
             moving_averages.append(m)
         
         self.moving_averages = np.array(moving_averages)
-        for i in range(375, self.moving_averages.shape[1]):
+        for i in range(self.moving_averages.shape[1]):
             self.moving_averages[:, i] = self.moving_averages[0, i] - self.moving_averages[:, i]
 
         self.moving_averages = np.delete(self.moving_averages, 0, 0)

@@ -5,3 +5,5 @@
 3) for prediction use multiple ANN like multiple knowledgeable person
     the person can be trained with different stocks data so that they have wide view over stock trading.
 4)  using two ann like sell ann buy ann for diff purpose
+
+5) using ann to predict only buy, my manual code will decide when to sell.

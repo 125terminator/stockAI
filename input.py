@@ -27,7 +27,7 @@ class Inputs:
         return np.array(rsi)
 
     def compute_rsi(self):
-        periods = [15, 27, 41, 61, 128, 375]
+        periods = [30, 60, 180, 375, 375*5, 375*10]
         self.rsi_list = []
         for period in periods:
             m = self.rsi(period)
@@ -37,7 +37,7 @@ class Inputs:
         self.rsi_list /= 100
     
     def compute_moving_averages(self):
-        periods = [1, 3, 5, 7, 11, 15, 19, 23, 27, 35, 41, 50, 61, 128, 375]
+        periods = [1, 30, 60, 180, 375, 375*5, 375*10]
         moving_averages = []
         for period in periods:
             m = self.df.Close.rolling(period).mean()

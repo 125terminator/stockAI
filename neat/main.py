@@ -25,11 +25,14 @@ ann_inputs = Inputs(df)
 
 
 def eval_genomes(genomes, config):
-
+    global GEN_NUM
+    GEN_NUM += 1
+    logger = open('log/{}'.format(GEN_NUM), 'w')
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         robo = Robo(ann=net, df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
-        genome.fitness = robo.fitness
+        genome.fitness = robo.fitness()
+    logger.close()
 
 
 
@@ -64,5 +67,5 @@ if __name__ == '__main__':
     # here so that the script will run successfully regardless of the
     # current working directory.
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforward.txt')
+    config_path = os.path.join(local_dir, 'config_feedforward.txt')
     run(config_path)

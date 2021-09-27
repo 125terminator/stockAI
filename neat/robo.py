@@ -60,7 +60,7 @@ class Robo:
         # 2 -> hold
 
         for i in range(start_index, end_index):
-            ind = np.argmax(self.ann.activate(output[:, i]))
+            ind = np.argmax(self.ann.activate(self.inputs[:, i]))
 
             # Do not buy stocks after 15:10
             # only sell the stock

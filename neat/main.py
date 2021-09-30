@@ -18,6 +18,7 @@ df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
 
 GEN_NUM = 0
+BEST_FITNESS = 0
 WEIGHT_MAP = dict()
 if not os.path.exists('log'):
     os.mkdir('log')
@@ -32,6 +33,9 @@ def eval_genomes(genomes, config):
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         robo = Robo(ann=net, df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
         genome.fitness = robo.fitness()
+        if genome.fitness > BEST_FITNESS:
+            pickle.dump(net,open("best.pickle", "wb"))
+            BEST_FITNESS = genome.fitness
     logger.close()
 
 

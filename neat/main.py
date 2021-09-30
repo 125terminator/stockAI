@@ -26,7 +26,7 @@ ann_inputs = Inputs(df)
 
 
 def eval_genomes(genomes, config):
-    global GEN_NUM
+    global GEN_NUM, BEST_FITNESS
     GEN_NUM += 1
     logger = open('log/{}'.format(GEN_NUM), 'w')
     for genome_id, genome in genomes:

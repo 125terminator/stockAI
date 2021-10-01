@@ -52,7 +52,7 @@ class Robo:
     def fitness(self):
         # 375 ind is start of 9:15 and 10088 time is 15:29
         start_index = 375
-        end_index = 10088
+        end_index = 10088*2+37
         output = self.ann.forward_propagation(self.inputs)
         # output index meaning
         # 0 -> buy if money

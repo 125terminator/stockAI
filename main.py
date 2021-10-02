@@ -3,7 +3,6 @@ import time
 
 import numpy as np
 import pandas as pd
-import xxhash
 
 from neural_network import NeuralNetwork
 from robo import Robo
@@ -33,14 +32,9 @@ def main(ann):
     ge = {}
     # cur_time = time.time()
     for robo_id in range(0, len(ann)):
-        weight_string = list(ann[robo_id].params.values())[0].tobytes()
-        weight_hash = xxhash.xxh32(weight_string).hexdigest()
-        if weight_hash in WEIGHT_MAP:
-            ge[robo_id] = WEIGHT_MAP[weight_hash]
-        else:
-            robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
-            ge[robo_id] = robos[robo_id].fitness()
-            WEIGHT_MAP[weight_hash] = ge[robo_id]
+        robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
+        ge[robo_id] = robos[robo_id].fitness()
+        WEIGHT_MAP[weight_hash] = ge[robo_id]
     logger.close()
     # print(time.time() - cur_time)
     return ge 

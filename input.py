@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import zscore
 
 class Inputs:
     def __init__(self, df):
@@ -38,7 +39,10 @@ class Inputs:
         for period in periods:
             m = self.DEMA(period)
             self.dema_list.append(m)
-        self.dema_list = np.array(self.dema_list)
+
+        # self.dema_list = np.array(self.dema_list)
+        self.dema_list =  zscore(self.dema_list, axis=1, nan_policy='omit')
+        
 
     def compute_rsi(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]
@@ -47,8 +51,7 @@ class Inputs:
             m = self.rsi(period)
             self.rsi_list.append(m)
         
-        self.rsi_list = np.array(self.rsi_list)
-        self.rsi_list /= 100
+        self.rsi_list = zscore(self.rsi_list, axis=1, nan_policy='omit')
     
     def compute_moving_averages(self):
         periods = [1, 30, 60, 180, 375, 375*5, 375*10]
@@ -62,3 +65,4 @@ class Inputs:
             self.moving_averages[:, i] = self.moving_averages[0, i] - self.moving_averages[:, i]
 
         self.moving_averages = np.delete(self.moving_averages, 0, 0)
+        self.moving_averages = zscore(self.moving_averages, axis=1, nan_policy='omit')

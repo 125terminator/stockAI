@@ -12,7 +12,7 @@ class Robo:
         self.ann = ann
         self.df = df
         self.money = money
-        self.init_money = money
+        self.stop_loss = -money*0.02
         # self.bought -> [has stocks, number of stocks, price of each stock]
         self.bought = [False, 0, 0]
         self.time_ind = []
@@ -28,6 +28,8 @@ class Robo:
         stock_qty = self.bought[1]
 
         net_profit = get_net_profit(buy_price, sell_price, stock_qty)
+
+        return net_profit
 
     def sell_stocks(self, i):
         if self.bought[0] == True:
@@ -71,7 +73,7 @@ class Robo:
 
             # if loss reaches -2% sell immediately
             # TODO: make it variable according to the initial money
-            if self.bought == True and self.get_net_profit(i) <= -2000:
+            if self.bought == True and self.get_net_profit(i) <= self.stop_loss:
                 self.sell_stocks(i)
             # Do not buy stocks after 15:10
             # only sell the stock

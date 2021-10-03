@@ -5,16 +5,22 @@ class Inputs:
         self.df = df
         self.moving_averages = []
         self.rsi_list = []
+        self.dema_list = []
         self.inputs = []
         self.prepare_inputs()
 
     def prepare_inputs(self):
         self.compute_moving_averages()
         self.compute_rsi()
-        self.inputs = np.concatenate((self.moving_averages, self.rsi_list), axis=0)
+        self.compute_dema()
+        self.inputs = np.concatenate((self.moving_averages, self.rsi_list, self.dema_list), axis=0)
 
     def ema(self, series, n):
         return series.ewm(span=n, min_periods=n).mean()
+
+    def DEMA(self, n):
+        EMA = self.ema(self.df.Close, n)
+        return 2*EMA - self.ema(EMA,n)
 
     def rsi(self, n=14):
         diff = self.df.Close.diff(1)
@@ -25,6 +31,14 @@ class Inputs:
         emadn = self.ema(dn, n)
         rsi = 100 * emaup / (emaup + emadn)
         return np.array(rsi)
+    
+    def compute_dema(self):
+        periods = [30, 60, 180, 375, 375*5, 375*10]
+        self.dema_list = []
+        for period in periods:
+            m = self.DEMA(period)
+            self.dema_list.append(m)
+        self.dema_list = np.array(self.dema_list)
 
     def compute_rsi(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]

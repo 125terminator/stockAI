@@ -22,6 +22,13 @@ class Robo:
         self.logger = logger
         self.logger.write("Start of stock buying {}\n".format(self))
 
+    def get_net_profit(self, i):
+        sell_price = self.df.Close[i]
+        buy_price = self.bought[2]
+        stock_qty = self.bought[1]
+
+        net_profit = get_net_profit(buy_price, sell_price, stock_qty)
+
     def sell_stocks(self, i):
         if self.bought[0] == True:
             sell_price = self.df.Close[i]
@@ -62,9 +69,13 @@ class Robo:
         for i in range(start_index, end_index):
             ind = np.argmax(self.ann.activate(self.inputs[:, i]))
 
+            # if loss reaches -2% sell immediately
+            # TODO: make it variable according to the initial money
+            if self.bought == True and self.get_net_profit(i) <= -2000:
+                self.sell_stocks(i)
             # Do not buy stocks after 15:10
             # only sell the stock
-            if self.df.Date[i] > 356:
+            elif self.df.Date[i] > 356:
                 if ind == 1:
                     self.sell_stocks(i)
                 

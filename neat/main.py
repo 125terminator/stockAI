@@ -20,7 +20,6 @@ df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
 GEN_NUM = 0
 BEST_FITNESS = 0
-WEIGHT_MAP = dict()
 if not os.path.exists('log'):
     os.mkdir('log')
 ann_inputs = Inputs(df)

@@ -8,5 +8,6 @@
 !git clone https://github.com/125terminator/stockAI.git
 !cp -r stockAI/* .
 !rm main.py
+!rm main_test.py
 !rm robo.py
 !cp -r stockAI/neat/* .

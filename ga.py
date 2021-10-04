@@ -9,6 +9,9 @@ from random import randrange
 from math import floor
 from numpy import loadtxt, savetxt
 import pickle
+from typing import Tuple
+
+from ga_helper import mating
 
 population = []
 generationCount = 0
@@ -22,27 +25,10 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
         population.append(NeuralNetwork(X, Y, n_h))
     return population
 
-  def mutation(child, mutationRate):
-    global generationCount
-    scale = 1
-    lscale = 0.0
-    # Add decay in scale
-    # scale = scale/pow(10, generationCount//10)
-    for _, params in child.params.items():
-      if random.random() <= mutationRate:
-        params += np.random.normal(loc=lscale, scale=scale, size=params.shape)
-
   def rankPopulation():
     global population, popRanked
     popRanked = main(population)
-    # fitnessSum=0
-    # for i in range(len(population)):
-    #   # print(population[i], population[i].food)
-    #   fit = population[i].compute_cost(X, Y)
-    #   # fitnessSum+=fit
-    #   popRanked[i] = fit
     popRanked = sorted(popRanked.items(), key = operator.itemgetter(1), reverse = True)
-    # return fitnessSum, rankedPopulation
   
   def random_pick():
     global popRanked
@@ -60,10 +46,11 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
     newPopulation = []
     for i in range(eliteSize):
       newPopulation.append(population[popRanked[i][0]])
-    for i in range(len(population)-eliteSize):
-      tmpPop = copy.deepcopy(population[random_pick()])
-      mutation(tmpPop, mutationRate)
-      newPopulation.append(tmpPop)
+    for i in range((len(population)-eliteSize)//2):
+      p1 = population[random_pick()]
+      p2 = population[random_pick()]
+      c1, c2 = mating(p1, p2, mutationRate)
+      newPopulation.extend([c1, c2])
     return newPopulation
 
   def genetic_algorithm(popSize, eliteSize, mutationRate, generations):

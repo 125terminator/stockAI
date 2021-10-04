@@ -26,29 +26,29 @@ def simulated_binary_crossover(parent1: np.ndarray, parent2: np.ndarray, eta: fl
 
     return chromosome1, chromosome2
 
-  def gaussian_mutation(chromosome: np.ndarray, prob_mutation: float, 
-                      mu: List[float] = None, sigma: List[float] = None,
-                      scale: Optional[float] = None) -> None:
-    """
-    Perform a gaussian mutation for each gene in an individual with probability, prob_mutation.
+def gaussian_mutation(chromosome: np.ndarray, prob_mutation: float,
+                    mu: List[float] = None, sigma: List[float] = None,
+                    scale: Optional[float] = None) -> None:
+  """
+  Perform a gaussian mutation for each gene in an individual with probability, prob_mutation.
 
-    If mu and sigma are defined then the gaussian distribution will be drawn from that,
-    otherwise it will be drawn from N(0, 1) for the shape of the individual.
-    """
-    # Determine which genes will be mutated
-    mutation_array = np.random.random(chromosome.shape) < prob_mutation
-    # If mu and sigma are defined, create gaussian distribution around each one
-    if mu and sigma:
-        gaussian_mutation = np.random.normal(mu, sigma)
-    # Otherwise center around N(0,1)
-    else:
-        gaussian_mutation = np.random.normal(size=chromosome.shape)
-    
-    if scale:
-        gaussian_mutation[mutation_array] *= scale
+  If mu and sigma are defined then the gaussian distribution will be drawn from that,
+  otherwise it will be drawn from N(0, 1) for the shape of the individual.
+  """
+  # Determine which genes will be mutated
+  mutation_array = np.random.random(chromosome.shape) < prob_mutation
+  # If mu and sigma are defined, create gaussian distribution around each one
+  if mu and sigma:
+      gaussian_mutation = np.random.normal(mu, sigma)
+  # Otherwise center around N(0,1)
+  else:
+      gaussian_mutation = np.random.normal(size=chromosome.shape)
+  
+  if scale:
+      gaussian_mutation[mutation_array] *= scale
 
-    # Update
-    chromosome[mutation_array] += gaussian_mutation[mutation_array]
+  # Update
+  chromosome[mutation_array] += gaussian_mutation[mutation_array]
 
 def random_uniform_mutation(chromosome: np.ndarray, prob_mutation: float,
                             low: Union[List[float], float],
@@ -93,7 +93,7 @@ def single_point_binary_crossover(parent1: np.ndarray, parent2: np.ndarray, majo
 
     return offspring1, offspring2
 
-def crossover(self, parent1_weights: np.ndarray, parent2_weights: np.ndarray,
+def crossover(parent1_weights: np.ndarray, parent2_weights: np.ndarray,
                    parent1_bias: np.ndarray, parent2_bias: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
         child1_weights, child2_weights = None, None
@@ -103,8 +103,8 @@ def crossover(self, parent1_weights: np.ndarray, parent2_weights: np.ndarray,
 
         # SBX
         if randrange(2) == 0:
-            child1_weights, child2_weights = SBX(parent1_weights, parent2_weights, _SBX_eta)
-            child1_bias, child2_bias =  SBX(parent1_bias, parent2_bias, _SBX_eta)
+            child1_weights, child2_weights = simulated_binary_crossover(parent1_weights, parent2_weights, _SBX_eta)
+            child1_bias, child2_bias =  simulated_binary_crossover(parent1_bias, parent2_bias, _SBX_eta)
 
         # Single point binary crossover (SPBX)
         else:
@@ -138,7 +138,6 @@ def mutation(child1_weights: np.ndarray, child2_weights: np.ndarray,
         random_uniform_mutation(child1_bias, mutation_rate, -1, 1)
         random_uniform_mutation(child2_bias, mutation_rate, -1, 1)
 
-
 def mating(p1, p2, mutation_rate):
     L = len(p1.layer_nodes)
     c1_params = {}
@@ -169,4 +168,5 @@ def mating(p1, p2, mutation_rate):
       np.clip(c1_params['b' + str(l)], -1, 1, out=c1_params['b' + str(l)])
       np.clip(c2_params['b' + str(l)], -1, 1, out=c2_params['b' + str(l)])
 
-    return c1, c2
+    p1.params = c1_params
+    p2.params = c2_params

@@ -1,17 +1,18 @@
-import numpy as np
 import random
-from neural_network import NeuralNetwork
 import time, datetime
-from numpy import loadtxt
 import operator
 import copy
 from random import randrange
 from math import floor
-from numpy import loadtxt, savetxt
 import pickle
+
+import numpy as np
+from numpy import loadtxt
+from numpy import loadtxt, savetxt
 from typing import Tuple
 
 from ga_helper import mating
+from neural_network import NeuralNetwork
 
 population = []
 generationCount = 0
@@ -47,10 +48,10 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
     for i in range(eliteSize):
       newPopulation.append(population[popRanked[i][0]])
     for i in range((len(population)-eliteSize)//2):
-      p1 = population[random_pick()]
-      p2 = population[random_pick()]
-      c1, c2 = mating(p1, p2, mutationRate)
-      newPopulation.extend([c1, c2])
+      p1 = copy.deepcopy(population[random_pick()])
+      p2 = copy.deepcopy(population[random_pick()])
+      mating(p1, p2, mutationRate)
+      newPopulation.extend([p1, p2])
     return newPopulation
 
   def genetic_algorithm(popSize, eliteSize, mutationRate, generations):

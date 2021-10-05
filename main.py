@@ -19,24 +19,26 @@ df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
 
 GEN_NUM = 0
-WEIGHT_MAP = dict()
 if not os.path.exists('log'):
     os.mkdir('log')
 ann_inputs = Inputs(df)
 
 def main(ann):
     robos = {}
-    global GEN_NUM, WEIGHT_MAP
+    global GEN_NUM
     GEN_NUM += 1
     logger = open('log/{}'.format(GEN_NUM), 'w')
     ge = {}
-    # cur_time = time.time()
+    cur_time = time.time()
     for robo_id in range(0, len(ann)):
-        robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
-        ge[robo_id] = robos[robo_id].fitness()
-        WEIGHT_MAP[weight_hash] = ge[robo_id]
+        if ann.fitness == False:
+            robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
+            ge[robo_id] = robos[robo_id].fitness()
+            ann.fitness = ge[robo_id]
+        else:
+            ge[robo_id] = ann.fitness
     logger.close()
-    # print(time.time() - cur_time)
+    print(time.time() - cur_time)
     return ge 
 
 

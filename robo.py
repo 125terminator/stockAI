@@ -73,7 +73,7 @@ class Robo:
 
             # if loss reaches -2% sell immediately
             # TODO: make it variable according to the initial money
-            if self.bought == True and self.get_net_profit(i) <= self.stop_loss:
+            if self.bought[0] == True and self.get_net_profit(i) <= self.stop_loss:
                 self.sell_stocks(i)
             # Do not buy stocks after 15:10
             # only sell the stock

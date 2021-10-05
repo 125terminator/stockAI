@@ -35,14 +35,7 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
   def rankPopulation():
     global population, popRanked
     popRanked = main(population)
-    # fitnessSum=0
-    # for i in range(len(population)):
-    #   # print(population[i], population[i].food)
-    #   fit = population[i].compute_cost(X, Y)
-    #   # fitnessSum+=fit
-    #   popRanked[i] = fit
     popRanked = sorted(popRanked.items(), key = operator.itemgetter(1), reverse = True)
-    # return fitnessSum, rankedPopulation
   
   def random_pick():
     global popRanked
@@ -55,14 +48,13 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
   def next_generation(eliteSize, mutationRate):
     global population
     global popRanked
-    # popRanked = rankPopulation()
-    # fitnessSum = popRanked[0]
     newPopulation = []
     for i in range(eliteSize):
       newPopulation.append(population[popRanked[i][0]])
     for i in range(len(population)-eliteSize):
       tmpPop = copy.deepcopy(population[random_pick()])
       mutation(tmpPop, mutationRate)
+      tmpPop.fitness = False
       newPopulation.append(tmpPop)
     return newPopulation
 

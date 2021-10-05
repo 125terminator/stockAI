@@ -13,6 +13,7 @@ class NeuralNetwork:
     self.layer_nodes = [X.shape[0]]
     self.layer_nodes.extend(n_h)
     self.layer_nodes.append(Y.shape[0])
+    self.fitness = False
     self.params = {}
     self.initialize_parameters(self.input_nodes, self.hidden_nodes, self.ouput_nodes)
 

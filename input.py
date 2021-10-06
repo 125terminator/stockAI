@@ -43,15 +43,15 @@ class Inputs:
         EEMA = self.ema(EMA, n)
         return 3*EMA - 3*EEMA + self.ema(EEMA, n)
 
-    def stoch(n=14):
-        smin = self.df.Low.rolling(n, min_periods=0).min()
-        smax = self.df.High.rolling(n, min_periods=0).max()
+    def stoch(self, n=14):
+        smin = self.df.Low.rolling(n).min()
+        smax = self.df.High.rolling(n).max()
         stoch_k = 100 * (self.df.Close - smin) / (smax - smin)
         return np.array(stoch_k)
 
     def stoch_signal(self, n=14, d_n=3):
-        stoch_k = stoch(high, low, close, n, fillna=fillna)
-        stoch_d = stoch_k.rolling(d_n, min_periods=0).mean()
+        stoch_k = pd.Series(self.stoch(n), name='stoch_k')
+        stoch_d = stoch_k.rolling(d_n).mean()
         return np.array(stoch_d)
 
     def rsi(self, n=14):
@@ -75,18 +75,18 @@ class Inputs:
 
         return np.array(atr)
 
-    def vortex_indicator_pos(n=14):
+    def vortex_indicator_pos(self, n=14):
         tr = self.df.High.combine(self.df.Close.shift(1), max) - self.df.Low.combine(self.df.Close.shift(1), min)
         trn = tr.rolling(n).sum()
 
         vmp = np.abs(self.df.High - self.df.Low.shift(1))
         vmm = np.abs(self.df.Low - self.df.High.shift(1))
 
-        vip = vmp.rolling(n, min_periods=0).sum() / trn
+        vip = vmp.rolling(n).sum() / trn
         return np.array(vip)
 
 
-    def vortex_indicator_neg(n=14):
+    def vortex_indicator_neg(self, n=14):
         tr = self.df.High.combine(self.df.Close.shift(1), max) - self.df.Low.combine(self.df.Close.shift(1), min)
         trn = tr.rolling(n).sum()
 
@@ -96,12 +96,12 @@ class Inputs:
         vin = vmm.rolling(n).sum() / trn
         return np.array(vin)
 
-    def cci(n=20, c=0.015):
+    def cci(self, n=20, c=0.015):
         pp = (self.df.High + self.df.Low + self.df.Close) / 3.0
-        cci = (pp - pp.rolling(n, min_periods=0).mean()) / (c * pp.rolling(n, min_periods=0).std())
+        cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
         return np.array(cci)
 
-    def compute_vortex_indicator_pos():
+    def compute_vortex_indicator_pos(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]
         for period in periods:
             m = self.vortex_indicator_pos(period)
@@ -109,7 +109,7 @@ class Inputs:
 
         self.vip_list = zscore(self.vip_list, axis=1, nan_policy='omit')
 
-    def compute_vortex_indicator_neg():
+    def compute_vortex_indicator_neg(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]
         for period in periods:
             m = self.vortex_indicator_neg(period)
@@ -117,7 +117,7 @@ class Inputs:
 
         self.vin_list = zscore(self.vin_list, axis=1, nan_policy='omit')
 
-    def compute_cci():
+    def compute_cci(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]
         for period in periods:
             m = self.cci(period)

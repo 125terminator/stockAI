@@ -44,17 +44,6 @@ class Inputs:
         EEMA = self.ema(EMA, n)
         return 3*EMA - 3*EEMA + self.ema(EEMA, n)
 
-    def stoch(self, n=14):
-        smin = self.df.Low.rolling(n).min()
-        smax = self.df.High.rolling(n).max()
-        stoch_k = 100 * (self.df.Close - smin) / (smax - smin)
-        return np.array(stoch_k)
-
-    def stoch_signal(self, n=14, d_n=3):
-        stoch_k = pd.Series(self.stoch(n), name='stoch_k')
-        stoch_d = stoch_k.rolling(d_n).mean()
-        return np.array(stoch_d)
-
     def rsi(self, n=14):
         diff = self.df.Close.diff(1)
         which_dn = diff < 0
@@ -64,76 +53,6 @@ class Inputs:
         emadn = self.ema(dn, n)
         rsi = 100 * emaup / (emaup + emadn)
         return np.array(rsi)
-
-    def average_true_range(n=14):
-        cs = self.df.Close.shift(1)
-        tr = self.df.High.combine(cs, max) - self.df.Low.combine(cs, min)
-
-        atr = np.zeros(len(self.df.Close))
-        atr[0] = tr[1::].mean()
-        for i in range(1, len(atr)):
-            atr[i] = (atr[i-1] * (n-1) + tr.iloc[i]) / float(n)
-
-        return np.array(atr)
-
-    def vortex_indicator_pos(self, n=14):
-        tr = self.df.High.combine(self.df.Close.shift(1), max) - self.df.Low.combine(self.df.Close.shift(1), min)
-        trn = tr.rolling(n).sum()
-
-        vmp = np.abs(self.df.High - self.df.Low.shift(1))
-        vmm = np.abs(self.df.Low - self.df.High.shift(1))
-
-        vip = vmp.rolling(n).sum() / trn
-        return np.array(vip)
-
-
-    def vortex_indicator_neg(self, n=14):
-        tr = self.df.High.combine(self.df.Close.shift(1), max) - self.df.Low.combine(self.df.Close.shift(1), min)
-        trn = tr.rolling(n).sum()
-
-        vmp = np.abs(self.df.High - self.df.Low.shift(1))
-        vmm = np.abs(self.df.Low - self.df.High.shift(1))
-
-        vin = vmm.rolling(n).sum() / trn
-        return np.array(vin)
-
-    def cci(self, n=20, c=0.015):
-        pp = (self.df.High + self.df.Low + self.df.Close) / 3.0
-        cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
-        return np.array(cci)
-
-    def compute_vortex_indicator_pos(self):
-        periods = [30, 60, 180, 375, 375*5, 375*10]
-        for period in periods:
-            m = self.vortex_indicator_pos(period)
-            self.vip_list.append(m)
-
-        self.vip_list = zscore(self.vip_list, axis=1, nan_policy='omit')
-
-    def compute_vortex_indicator_neg(self):
-        periods = [30, 60, 180, 375, 375*5, 375*10]
-        for period in periods:
-            m = self.vortex_indicator_neg(period)
-            self.vin_list.append(m)
-
-        self.vin_list = zscore(self.vin_list, axis=1, nan_policy='omit')
-
-    def compute_cci(self):
-        periods = [30, 60, 180, 375, 375*5, 375*10]
-        for period in periods:
-            m = self.cci(period)
-            self.cci_list.append(m)
-
-        self.cci_list = zscore(self.cci_list, axis=1, nan_policy='omit')
-
-    def compute_stoch(self):
-        periods = [30, 60, 180, 375, 375*5, 375*10]
-        for period in periods:
-            m = self.stoch(period)
-            self.stoch_list.append(m)
-
-        self.stoch_list.append(self.stoch_signal(375*10, 375*4))
-        self.stoch_list = zscore(self.stoch_list, axis=1, nan_policy='omit')
 
     def compute_tema(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]

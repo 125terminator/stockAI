@@ -67,7 +67,8 @@ class Inputs:
             m = self.rsi(period)
             self.rsi_list.append(m)
         
-        self.rsi_list = zscore(self.rsi_list, axis=1, nan_policy='omit')
+        self.rsi_list = np.array(self.rsi_list)
+        self.rsi_list /= 100
     
     def compute_moving_averages(self):
         periods = [1, 30, 60, 180, 375, 375*5, 375*10]

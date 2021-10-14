@@ -9,10 +9,6 @@ class Inputs:
         self.rsi_list = []
         self.dema_list = []
         self.tema_list = []
-        self.stoch_list = []
-        self.vin_list = []
-        self.vip_list = []
-        self.cci_list = []
         self.inputs = []
         self.prepare_inputs()
 
@@ -21,13 +17,8 @@ class Inputs:
         self.compute_rsi()
         self.compute_dema()
         self.compute_tema()
-        self.compute_stoch()
-        self.compute_vortex_indicator_pos()
-        self.compute_vortex_indicator_neg()
-        self.compute_cci()
         self.inputs = np.concatenate((self.moving_averages, \
-            self.rsi_list, self.dema_list, self.tema_list, \
-            self.stoch_list, self.vip_list, self.vin_list, self.cci_list), axis=0)
+            self.rsi_list, self.dema_list, self.tema_list), axis=0)
 
     # Exponential moving average
     def ema(self, series, n):

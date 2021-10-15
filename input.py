@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from scipy.stats import zscore
 
 class Inputs:
@@ -9,6 +8,8 @@ class Inputs:
         self.rsi_list = []
         self.dema_list = []
         self.tema_list = []
+        self.stoch_list = []
+        self.macd_signal_cross = []
         self.inputs = []
         self.prepare_inputs()
 
@@ -17,12 +18,22 @@ class Inputs:
         self.compute_rsi()
         self.compute_dema()
         self.compute_tema()
+        self.compute_stoch()
+        self.compute_macd()
         self.inputs = np.concatenate((self.moving_averages, \
-            self.rsi_list, self.dema_list, self.tema_list), axis=0)
+            self.rsi_list, self.dema_list, self.tema_list, self.stoch_list,\
+            self.macd_signal_cross), axis=0)
 
     # Exponential moving average
     def ema(self, series, n):
         return series.ewm(span=n, min_periods=n).mean()
+
+    def macd(self, n):
+        exp1 = ema(self.df.Close, 12*n)
+        exp2 = ema(self.df.Close, 26*n)
+        macd = exp1-exp2
+        exp3 = ema(macd, 9*n)
+        return np.array(2*(macd>exp3).shift(1)-1)
 
     # Double exponential average
     def DEMA(self, n):
@@ -35,6 +46,17 @@ class Inputs:
         EEMA = self.ema(EMA, n)
         return 3*EMA - 3*EEMA + self.ema(EEMA, n)
 
+    def stoch(n=14):
+        smin = self.df.Low.rolling(n, min_periods=0).min()
+        smax = self.df.High.rolling(n, min_periods=0).max()
+        stoch_k = 100 * (self.df.Close - smin) / (smax - smin)
+        return np.array(stoch_k)
+
+    def stoch_signal(self, n=14, d_n=3):
+        stoch_k = stoch(high, low, close, n, fillna=fillna)
+        stoch_d = stoch_k.rolling(d_n, min_periods=0).mean()
+        return np.array(stoch_d)
+
     def rsi(self, n=14):
         diff = self.df.Close.diff(1)
         which_dn = diff < 0
@@ -44,6 +66,22 @@ class Inputs:
         emadn = self.ema(dn, n)
         rsi = 100 * emaup / (emaup + emadn)
         return np.array(rsi)
+
+    def compute_macd(self):
+        periods = [1, 10, 100, 375]
+        for period in periods:
+            self.macd_signal_cross.append(self.macd(period))
+
+        self.macd_signal_cross = np.array(self.macd_signal_cross)
+
+    def compute_stoch(self):
+        periods = [30, 60, 180, 375, 375*5, 375*10]
+        for period in periods:
+            m = self.stoch(period)
+            self.stoch_list.append(m)
+
+        self.stoch_list.append(self.stoch_signal(375*10, 375*4))
+        self.stoch_list = zscore(self.stoch_list, axis=1, nan_policy='omit')
 
     def compute_tema(self):
         periods = [30, 60, 180, 375, 375*5, 375*10]

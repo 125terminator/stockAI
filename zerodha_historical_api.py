@@ -9,7 +9,7 @@ import numpy as np
 def candles_to_csv(array):
     array = np.array(array)
     df = pd.DataFrame(array)
-    df.rename(columns={0: 'date', 1: 'open', 2: 'open_high', 3:'open_low', 4: 'close', 5: 'volume'}, inplace=True)
+    df.rename(columns={0: 'Date', 1: 'Open', 2: 'High', 3:'Low', 4: 'Close', 5: 'Volume'}, inplace=True)
     df.to_csv('reliance.csv')
 
 def get_candles(url):
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # date format %Y-%m-%d
     frm = datetime.strptime( "2015-03-01", "%Y-%m-%d" )
     to = datetime.strptime( "2015-03-01", "%Y-%m-%d" )
-    today = datetime.tody()
+    today = datetime.today()
     url = "https://kite.zerodha.com/oms/instruments/historical/{stock_id}/minute?user_id=GH1868&oi=1&from={from_}&to={to_}"
     headers = {
         "accept": "*/*",

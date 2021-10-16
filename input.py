@@ -68,7 +68,7 @@ class Inputs:
         return np.array(rsi)
 
     def compute_macd(self):
-        periods = [1, 10, 100, 375]
+        periods = [1, 10, 50, 100]
         for period in periods:
             self.macd_signal_cross.append(self.macd(period))
 

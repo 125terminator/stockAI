@@ -54,7 +54,6 @@ def GA(X, Y, n_h, main, generations=10, popSize=100, eliteSize=10, mutationRate=
     for i in range(len(population)-eliteSize):
       tmpPop = copy.deepcopy(population[random_pick()])
       mutation(tmpPop, mutationRate)
-      tmpPop.fitness = False
       newPopulation.append(tmpPop)
     return newPopulation
 

@@ -29,7 +29,7 @@ class Inputs:
         self.start_day = 0
         for i in range(self.first_non_nan, self.df.shape[0]):
             self.start_day = i
-            if self.df.Date[i][11:16] == '09:15':
+            if self.df.Date[i] == 1:
                 break
 
         self.end_day = self.start_day + 375*60
@@ -225,7 +225,7 @@ class Inputs:
         self.moving_averages = zscore(self.moving_averages, axis=1, nan_policy='omit')
 
 
-if __name__ == "__main__":
+if __name__ == "__main__1":
     df = pd.read_csv('./data/reliance.csv')
     # 375 ind is start of 9:15 and 10088 time is 15:29
     n = 50000

@@ -19,6 +19,7 @@ class Robo:
         self.profit = 0
         self.loss = 0
         self.inputs = ann_inputs.inputs
+        self.ann_inputs = ann_inputs
         self.logger = logger
         self.logger.write("Start of stock buying {}\n".format(self))
 
@@ -59,8 +60,8 @@ class Robo:
             self.bought = [False, 0, 0]
 
     def fitness(self):
-        start_index = ann_inputs.start_day
-        end_index = ann_inputs.end_day
+        start_index = self.ann_inputs.start_day
+        end_index = self.ann_inputs.end_day
         output = self.ann.forward_propagation(self.inputs)
         # output index meaning
         # 0 -> buy if money

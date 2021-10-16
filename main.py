@@ -11,11 +11,9 @@ from input import Inputs
 
 df = pd.read_csv('./data/reliance.csv')
 # 375 ind is start of 9:15 and 10088 time is 15:29
-n = 10088*2+37
+n = 50000
 df = df[:n]
 df.index = np.arange(0, df.shape[0])
-df["Time"] = df.Date
-df.Date = df.Date.apply(lambda x: (int(x[11:13])-9)*60 + int(x[14:16]) - 14)
 
 
 GEN_NUM = 0
@@ -32,7 +30,7 @@ def main(ann):
     cur_time = time.time()
     for robo_id in range(0, len(ann)):
         if ann[robo_id].fitness == False:
-            robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs.inputs, logger=logger)
+            robos[robo_id] = Robo(ann=ann[robo_id], df=df, money=100000, inputs=ann_inputs, logger=logger)
             ge[robo_id] = robos[robo_id].fitness()
             ann[robo_id].fitness = ge[robo_id]
         else:

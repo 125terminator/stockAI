@@ -8,7 +8,7 @@ from broker_calc import get_net_profit
 
 
 class Robo:
-    def __init__(self, ann, df, money, inputs, logger):
+    def __init__(self, ann, df, money, ann_inputs, logger):
         self.ann = ann
         self.df = df
         self.money = money
@@ -18,7 +18,7 @@ class Robo:
         self.time_ind = []
         self.profit = 0
         self.loss = 0
-        self.inputs = inputs
+        self.inputs = ann_inputs.inputs
         self.logger = logger
         self.logger.write("Start of stock buying {}\n".format(self))
 
@@ -59,9 +59,8 @@ class Robo:
             self.bought = [False, 0, 0]
 
     def fitness(self):
-        # 375 ind is start of 9:15 and 10088 time is 15:29
-        start_index = 375*10
-        end_index = 10088*2+37
+        start_index = ann_inputs.start_day
+        end_index = ann_inputs.end_day
         output = self.ann.forward_propagation(self.inputs)
         # output index meaning
         # 0 -> buy if money

@@ -11,3 +11,5 @@
 !rm main_test.py
 !rm robo.py
 !cp -r stockAI/neat/* .
+
+git clone https://<username>:<githubtoken>@github.com/<username>/<repositoryname>.git

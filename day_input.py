@@ -5,6 +5,10 @@ import math
 
 def one_hot(a, num_classes):
   return np.squeeze(np.eye(num_classes)[a.reshape(-1)])
+
+def flatten(t):
+    return [item for sublist in t for item in sublist]
+    
 periods = [2, 4, 8, 10, 14, 20, 30]
 class Inputs:
     def __init__(self, df):
@@ -21,6 +25,7 @@ class Inputs:
         self.macd_signal_cross = []
         self.obv_cross_list = []
         self.inputs = []
+        self.desc_inputs = []
         self.prepare_inputs()
 
         self.first_non_nan = 0
@@ -29,21 +34,29 @@ class Inputs:
                 if math.isnan(self.inputs[i, j]):
                     self.first_non_nan = max(self.first_non_nan, j)
 
-        self.start_day = self.first_non_nan
-
-        self.end_day = self.start_day + 180
-        print('start day: ', self.start_day)
-        print('end day: ', self.end_day)
+        self.test_days = 30
+        self.start_day = self.first_non_nan + 1
+        self.end_day = self.start_day + 3500
+        self.test_start_day = self.end_day
+        self.test_end_day = self.end_day+self.test_days
 
         self.inputs = np.transpose(self.inputs)
         
         self.x_train = self.inputs[self.start_day:self.end_day, :]
-        self.x_test = self.inputs[self.end_day:self.end_day+30, :]
+        self.x_test = self.inputs[self.test_start_day:self.test_end_day, :]
 
-        y = one_hot(np.array(self.df.Close > self.df.Open, dtype=np.int8), 2)
+        y = np.array(self.df.Close > self.df.Open, dtype=np.int8)
 
-        self.y_train = y[self.start_day:self.end_day, :]
-        self.y_test = y[self.end_day:self.end_day+30, :]
+        self.y_train = y[self.start_day:self.end_day]
+        self.y_test = y[self.test_start_day:self.test_end_day]
+
+        print('start day: ', self.start_day)
+        print('end day: ', self.end_day)
+        print('start test day: ', self.test_start_day)
+        print('end test day: ', self.test_end_day)
+        
+        print('inputs: ', self.inputs)
+        print('input description: ', self.desc_inputs)
 
     def prepare_inputs(self):
         self.compute_moving_averages()
@@ -57,10 +70,39 @@ class Inputs:
         self.compute_macd()
         self.compute_obv()
         self.compute_average_true_range()
-        self.inputs = np.concatenate((self.moving_averages, \
-            self.rsi_list, self.dema_list, self.tema_list, \
-            self.stoch_list, self.vip_list, self.vin_list, self.cci_list,\
-            self.avg_true_list, self.macd_signal_cross, self.obv_cross_list), axis=0)
+
+        data = (
+                self.moving_averages, \
+                self.rsi_list, \
+                self.dema_list, \
+                self.tema_list,\
+                self.stoch_list, \
+                self.vip_list, \
+                self.vin_list, \
+                self.cci_list, \
+                self.avg_true_list, \
+                self.macd_signal_cross, \
+                self.obv_cross_list
+        )
+        
+        self.desc_inputs = [
+                ["moving_averages"], \
+                ["rsi"], \
+                ["dema"], \
+                ["tema"], \
+                ["stoch"], \
+                ["vortex_indicator_pos"], \
+                ["vortex_indicator_neg"], \
+                ["cci"], \
+                ["average_true_range"], \
+                ["macd_and_signal_cross"], \
+                ["obv"]
+        ]
+        for i in range(len(data)):
+            self.desc_inputs[i] *= data[i].shape[0]
+        self.desc_inputs = np.array(flatten(self.desc_inputs))
+
+        self.inputs = np.concatenate(data, axis=0)
 
     # Exponential moving average
     def ema(self, series, n):
@@ -87,7 +129,7 @@ class Inputs:
     def stoch(self, n=14):
         smin = self.df.Low.rolling(n).min()
         smax = self.df.High.rolling(n).max()
-        stoch_k = 100 * (self.df.Close - smin) / (smax - smin)
+        stoch_k = 100 * (self.df.Close - smin) / (smax - smin + 1)
         return np.array(stoch_k)
 
     def stoch_signal(self, n=14, d_n=3):
@@ -102,7 +144,7 @@ class Inputs:
         up[which_dn], dn[which_dn] = 0, -up[which_dn]
         emaup = self.ema(up, n)
         emadn = self.ema(dn, n)
-        rsi = 100 * emaup / (emaup + emadn)
+        rsi = 100 * emaup / (emaup + emadn + 1)
         return np.array(rsi)
 
     def average_true_range(self, n=14):
@@ -123,7 +165,7 @@ class Inputs:
         vmp = np.abs(self.df.High - self.df.Low.shift(1))
         vmm = np.abs(self.df.Low - self.df.High.shift(1))
 
-        vip = vmp.rolling(n).sum() / trn
+        vip = vmp.rolling(n).sum() / ( trn + 1 )
         return np.array(vip)
 
     def vortex_indicator_neg(self, n=14):
@@ -138,7 +180,7 @@ class Inputs:
 
     def cci(self, n=20, c=0.015):
         pp = (self.df.High + self.df.Low + self.df.Close) / 3.0
-        cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std())
+        cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std()+1)
         return np.array(cci)
 
     def compute_macd(self):
@@ -236,9 +278,4 @@ class Inputs:
 
 if __name__ == "__main__":
     df = pd.read_csv('tataconsum.csv')
-    # 375 ind is start of 9:15 and 10088 time is 15:29
-    n = 50000
-    df = df[:n]
-    df.index = np.arange(0, df.shape[0])
-
     inp = Inputs(df)

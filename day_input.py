@@ -3,9 +3,6 @@ import pandas as pd
 from scipy.stats import zscore
 import math
 
-def one_hot(a, num_classes):
-  return np.squeeze(np.eye(num_classes)[a.reshape(-1)])
-
 def flatten(t):
     return [item for sublist in t for item in sublist]
     
@@ -45,7 +42,7 @@ class Inputs:
         self.x_train = self.inputs[self.start_day:self.end_day, :]
         self.x_test = self.inputs[self.test_start_day:self.test_end_day, :]
 
-        y = np.array(self.df.Close > self.df.Open, dtype=np.int8)
+        y = np.array((df.Close > df.Open).shift(-1).fillna(False), dtype=np.int8)
 
         self.y_train = y[self.start_day:self.end_day]
         self.y_test = y[self.test_start_day:self.test_end_day]
@@ -59,15 +56,42 @@ class Inputs:
         print('input description: ', self.desc_inputs)
 
     def prepare_inputs(self):
-        self.compute_moving_averages()
-        self.compute_rsi()
-        self.compute_dema()
-        self.compute_tema()
+        # technical parameters with open values
+        # moving_averages, rsi, dema, tema, macd
+        self.moving_averages = np.concatenate(
+            (
+                self.compute_moving_averages(),\
+                self.compute_moving_averages(open=True)
+            ), axis=0
+        )
+        self.rsi_list = np.concatenate(
+            (
+                self.compute_rsi(),\
+                self.compute_rsi(open=True)
+            ), axis=0
+        )
+        self.dema_list = np.concatenate(
+            (
+                self.compute_dema(),\
+                self.compute_dema(open=True)
+            ), axis=0
+        )
+        self.tema_list = np.concatenate(
+            (
+                self.compute_tema(),\
+                self.compute_tema(open=True)
+            ), axis=0
+        )
+        self.macd_signal_cross = np.concatenate(
+            (
+                self.compute_macd(),\
+                self.compute_macd(open=True)
+            ), axis=0
+        )
         self.compute_stoch()
         self.compute_vortex_indicator_pos()
         self.compute_vortex_indicator_neg()
         self.compute_cci()
-        self.compute_macd()
         self.compute_obv()
         self.compute_average_true_range()
 
@@ -108,21 +132,33 @@ class Inputs:
     def ema(self, series, n):
         return series.ewm(span=n, min_periods=n, ignore_na=True).mean()
 
-    def macd(self, n):
-        exp1 = self.ema(self.df.Close, 12*n)
-        exp2 = self.ema(self.df.Close, 26*n)
-        macd = exp1-exp2
-        exp3 = self.ema(macd, 9*n)
+    def macd(self, n, open=False):
+        if open:
+            exp1 = self.ema(self.df.Open, 12*n).shift(-1).fillna(0)
+            exp2 = self.ema(self.df.Open, 26*n).shift(-1).fillna(0)
+            macd = exp1-exp2
+            exp3 = self.ema(macd, 9*n)
+        else:
+            exp1 = self.ema(self.df.Close, 12*n)
+            exp2 = self.ema(self.df.Close, 26*n)
+            macd = exp1-exp2
+            exp3 = self.ema(macd, 9*n)
         return np.array(2*(macd>exp3)-1)
 
     # Double exponential average
-    def DEMA(self, n):
-        EMA = self.ema(self.df.Close, n)
+    def DEMA(self, n, open=False):
+        if open:
+            EMA = self.ema(self.df.Open, n).shift(-1).fillna(0)
+        else:
+            EMA = self.ema(self.df.Close, n)
         return 2*EMA - self.ema(EMA,n)
 
     # Triple exponential average
-    def TEMA(self, n):
-        EMA = self.ema(self.df.Close, n)
+    def TEMA(self, n, open=False):
+        if open:
+            EMA = self.ema(self.df.Open, n).shift(-1).fillna(0)
+        else:
+            EMA = self.ema(self.df.Close, n)
         EEMA = self.ema(EMA, n)
         return 3*EMA - 3*EEMA + self.ema(EEMA, n)
 
@@ -137,8 +173,11 @@ class Inputs:
         stoch_d = stoch_k.rolling(d_n).mean()
         return np.array(stoch_d)
 
-    def rsi(self, n=14):
-        diff = self.df.Close.diff(1)
+    def rsi(self, n=14, open=False):
+        if open:
+            diff = self.df.Open.diff(1).shift(-1).fillna(0)
+        else:
+            diff = self.df.Close.diff(1)
         which_dn = diff < 0
         up, dn = diff, diff*0
         up[which_dn], dn[which_dn] = 0, -up[which_dn]
@@ -182,13 +221,6 @@ class Inputs:
         pp = (self.df.High + self.df.Low + self.df.Close) / 3.0
         cci = (pp - pp.rolling(n).mean()) / (c * pp.rolling(n).std()+1)
         return np.array(cci)
-
-    def compute_macd(self):
-        periods = [1]
-        for period in periods:
-            self.macd_signal_cross.append(self.macd(period))
-
-        self.macd_signal_cross = np.array(self.macd_signal_cross)
 
     def compute_obv(self):
         obv = (np.sign(self.df.Close.diff()) * self.df.Volume).fillna(0).cumsum()
@@ -236,44 +268,57 @@ class Inputs:
         self.stoch_list.append(self.stoch_signal())
         self.stoch_list = zscore(self.stoch_list, axis=1, nan_policy='omit')
 
-    def compute_tema(self):
+    def compute_tema(self, open=False):
         global periods
+        tema_list = []
         for period in periods:
-            m = self.TEMA(period)
-            self.tema_list.append(m)
+            m = self.TEMA(period, open)
+            tema_list.append(m)
 
-        self.tema_list =  zscore(self.tema_list, axis=1, nan_policy='omit')
+        return zscore(tema_list, axis=1, nan_policy='omit')
 
-    def compute_dema(self):
+    def compute_dema(self, open=False):
         global periods
+        dema_list = []
         for period in periods:
-            m = self.DEMA(period)
-            self.dema_list.append(m)
+            m = self.DEMA(period, open)
+            dema_list.append(m)
 
-        self.dema_list =  zscore(self.dema_list, axis=1, nan_policy='omit')
+        return zscore(dema_list, axis=1, nan_policy='omit')
         
-    def compute_rsi(self):
+    def compute_rsi(self, open=False):
         global periods
+        rsi_list = []
         for period in periods:
-            m = self.rsi(period)
-            self.rsi_list.append(m)
+            m = self.rsi(period, open)
+            rsi_list.append(m)
         
-        self.rsi_list = np.array(self.rsi_list)
-        self.rsi_list /= 100
+        return np.array(rsi_list)/100
     
-    def compute_moving_averages(self):
+    def compute_macd(self, open=False):
+        periods = [1]
+        macd_signal_cross = []
+        for period in periods:
+            macd_signal_cross.append(self.macd(period, open))
+
+        return np.array(macd_signal_cross)
+    
+    def compute_moving_averages(self, open=False):
         periods = [1, 2, 4, 8, 10, 14, 20, 30]
         moving_averages = []
         for period in periods:
-            m = self.df.Close.rolling(period).mean()
+            if open:
+                m   = self.df.Open.rolling(period).mean().shift(-1).fillna(0)
+            else:
+                m   = self.df.Close.rolling(period).mean()
             moving_averages.append(m)
         
-        self.moving_averages = np.array(moving_averages)
-        for i in range(self.moving_averages.shape[1]):
-            self.moving_averages[:, i] = self.moving_averages[0, i] - self.moving_averages[:, i]
+        moving_averages = np.array(moving_averages)
+        for i in range(moving_averages.shape[1]):
+            moving_averages[:, i] = moving_averages[0, i] - moving_averages[:, i]
 
-        self.moving_averages = np.delete(self.moving_averages, 0, 0)
-        self.moving_averages = zscore(self.moving_averages, axis=1, nan_policy='omit')
+        moving_averages = np.delete(moving_averages, 0, 0)
+        return zscore(moving_averages, axis=1, nan_policy='omit')
 
 
 if __name__ == "__main__":

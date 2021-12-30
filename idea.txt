@@ -7,3 +7,8 @@
 4)  using two ann like sell ann buy ann for diff purpose
 
 5) using ann to predict only buy, my manual code will decide when to sell.
+
+test:
+shuffle 
+close
+open
